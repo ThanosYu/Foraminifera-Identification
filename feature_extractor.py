@@ -31,7 +31,13 @@ vgg16_model = vgg16.VGG16(include_top=False, pooling='avg')
 print('Pre-trained Model loaded.')
 
 # data_dir = './NCSU-CUB_Foram_Images_01/'
-data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerina_bulloides/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerina_bulloides/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerinoides_ruber/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerinoides_sacculifer/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_dutertrei/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_incompta/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_pachyderma/'
+data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Others/'
 # print('Folders  ', [folder for folder in os.listdir(data_dir)])
 
 prefix = 'NCSU-CUB_Foram_Images_'
