@@ -10,6 +10,7 @@ import umap
 import pandas as pd
 
 import base64
+import matplotlib.pyplot as plt
 
 from cassandra.cluster import Cluster
 from cassandra.policies import RoundRobinPolicy
@@ -24,21 +25,15 @@ forams_labels = []
 label2class = {}
 class_count = {}
 
-# folder = '/home/q/q/CNOOC/foraminifer'
-# folder = '/home/q/q/CNOOC/foraminifer/NCSU-CUB_Foram_Images_01/'
+folder = '/home/q/q/CNOOC/StoneDataSet'
 vgg16_model = vgg16.VGG16(include_top=False, pooling='avg')
 # resnet50_model = resnet50.ResNet50(include_top=False, pooling='avg')
 print('Pre-trained Model loaded.')
 
-# data_dir = './NCSU-CUB_Foram_Images_01/'
-data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerina_bulloides/'
-# print('Folders  ', [folder for folder in os.listdir(data_dir)])
+data_dir = './StoneDataSet/'
+print('for  ', [folder for folder in os.listdir(data_dir)])
 
-prefix = 'NCSU-CUB_Foram_Images_'
-class_id = ['Globigerina_bulloides',
-            'Globigerinoides_ruber', 'Globigerinoides_sacculifer',
-            'Neogloboquadrina_dutertrei', 'Neogloboquadrina_incompta', 'Neogloboquadrina_pachyderma',
-            'Others']
+class_id = ['a', 'b', 'c', 'd']
 
 img_shape = (224, 224)
 # mm = '/home/q/q/CNOOC/foraminifer/NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_pachyderma/2-3-17_Trial_2 N. Pachy from AJ 250-320 micro/imgray_4.png'
@@ -58,9 +53,9 @@ for dirs, subdirs, files in os.walk(data_dir):
     # if count > 3:
     #     continue
     # count += 1
-    #
-    # print('')
-    # print('')
+
+    print('')
+    print('')
 
     print('In folder = ', dirs, ' , found file = ', files)
 
@@ -76,9 +71,9 @@ for dirs, subdirs, files in os.walk(data_dir):
 
     for i, img_file in enumerate(files):
         forams_labels.append(this_id)
-        if not img_file.endswith('.png'):
-            print('Not an Image file')
-            continue
+        if not img_file.endswith('.jpg'):
+            print('Not an Image file !!!')
+            break
         else:
             pass
             ##print ('Image = ',img_file)
@@ -104,13 +99,14 @@ for dirs, subdirs, files in os.walk(data_dir):
         df_dict['Feature_4'].append(fea[0, 1])
         df_dict['Class'].append(class_id[this_id])
 
-        # print('Number of Features = ', fea.shape[1], ' for image = ', img_file)
+        print('Number of Features = ', fea.shape[1], ' for image = ', img_file)
         base64_data = base64.b64encode(open(img_file, 'rb').read())
         s = base64_data.decode()
         df_dict['Base64'].append(s)
+        print('')
+        # print('data:image/jpeg;base64,', s)
         # print('data:image/jpeg;base64,', s)
 
-print('**********************load into df success')
 forams_features = np.array(forams_features).reshape(len(forams_features), -1)
 forams_labels = np.array(forams_labels)
 print(forams_features.shape)
@@ -138,13 +134,18 @@ embedding = reducer.transform(forams_features)
 df['Feature_3'] = embedding[:, 0]
 df['Feature_4'] = embedding[:, 1]
 
+df['Class_id'] = df['Class'].astype('category').cat.codes
+
+plt.scatter(df['Feature_3'], df['Feature_4'], cmap='tab10', c=df['Class_id'])
+plt.show()
+
 # print ('---- ')
 # print (df['Feature_3'])
 
 df = df.reset_index(drop=True)
-# print('DataFrame ', df)
+print('DataFrame ', df)
 
-print('**********************start insert')
+'''
 for row in range(len(df)):
     print(df.loc[row, 'Class'])
     insertSql = 'insert into foraminifer_image(class,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
@@ -152,10 +153,9 @@ for row in range(len(df)):
     session.execute(insertSql,
                     (df.loc[row, 'Class'], df.loc[row, 'Feature_1'], df.loc[row, 'Feature_2'], df.loc[row, 'Feature_3'],
                      df.loc[row, 'Feature_4'], df.loc[row, 'Base64']))
-    if row % 10 == 0:
-        print('**********************row: ', row)
+    # print(row['Class'])
 
-print('**********************finish insert')
+'''
 '''
 
     #print (dir)
