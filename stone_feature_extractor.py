@@ -53,9 +53,9 @@ for dirs, subdirs, files in os.walk(data_dir):
     # if count > 3:
     #     continue
     # count += 1
-
-    print('')
-    print('')
+    #
+    # print('')
+    # print('')
 
     print('In folder = ', dirs, ' , found file = ', files)
 
