@@ -31,7 +31,7 @@ vgg16_model = vgg16.VGG16(include_top=False, pooling='avg')
 print('Pre-trained Model loaded.')
 
 data_dir = './StoneDataSet/'
-print('for  ', [folder for folder in os.listdir(data_dir)])
+# print('Folders  ', [folder for folder in os.listdir(data_dir)])
 
 class_id = ['a', 'b', 'c', 'd']
 
