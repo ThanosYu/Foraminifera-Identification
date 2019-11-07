@@ -9,6 +9,16 @@ import pickle
 import umap
 import pandas as pd
 
+import base64
+
+from cassandra.cluster import Cluster
+from cassandra.policies import RoundRobinPolicy
+
+cluster = Cluster(contact_points=['10.192.27.232'],
+                  port=9042,
+                  load_balancing_policy=RoundRobinPolicy())
+session = cluster.connect(keyspace='bbac')
+
 forams_features = []
 forams_labels = []
 label2class = {}
@@ -20,7 +30,7 @@ vgg16_model = vgg16.VGG16(include_top=False, pooling='avg')
 print('Pre-trained Model loaded.')
 
 data_dir = './NCSU-CUB_Foram_Images_01/'
-print('for  ', [folder for folder in os.listdir(data_dir)])
+print('Folders  ', [folder for folder in os.listdir(data_dir)])
 
 prefix = 'NCSU-CUB_Foram_Images_'
 class_id = ['Globigerina_bulloides',
@@ -40,6 +50,7 @@ df_dict['Feature_1'] = []
 df_dict['Feature_2'] = []
 df_dict['Feature_3'] = []
 df_dict['Feature_4'] = []
+df_dict['Base64'] = []
 count = 0
 for dirs, subdirs, files in os.walk(data_dir):
     if count > 3:
@@ -91,8 +102,13 @@ for dirs, subdirs, files in os.walk(data_dir):
         df_dict['Feature_4'].append(fea[0, 1])
         df_dict['Class'].append(class_id[this_id])
 
-        print('Number of Features = ', fea.shape[1], ' for image = ', img_file)
+        # print('Number of Features = ', fea.shape[1], ' for image = ', img_file)
+        base64_data = base64.b64encode(open(img_file, 'rb').read())
+        s = base64_data.decode()
+        df_dict['Base64'].append(s)
+        # print('data:image/jpeg;base64,', s)
 
+print('**********************load into df success')
 forams_features = np.array(forams_features).reshape(len(forams_features), -1)
 forams_labels = np.array(forams_labels)
 print(forams_features.shape)
@@ -124,8 +140,20 @@ df['Feature_4'] = embedding[:, 1]
 # print (df['Feature_3'])
 
 df = df.reset_index(drop=True)
-print('DataFrame ', df)
+# print('DataFrame ', df)
 
+print('**********************start insert')
+for row in range(len(df)):
+    print(df.loc[row, 'Class'])
+    insertSql = 'insert into foraminifer_image(class,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
+                '%s,%s,%s,%s) '
+    session.execute(insertSql,
+                    (df.loc[row, 'Class'], df.loc[row, 'Feature_1'], df.loc[row, 'Feature_2'], df.loc[row, 'Feature_3'],
+                     df.loc[row, 'Feature_4'], df.loc[row, 'Base64']))
+    if row % 10 == 0:
+        print('**********************row: ', row)
+
+print('**********************finish insert')
 '''
 
     #print (dir)
