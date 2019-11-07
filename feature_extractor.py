@@ -144,7 +144,7 @@ df = df.reset_index(drop=True)
 
 print('**********************start insert')
 for row in range(len(df)):
-    print(df.loc[row, 'Class'])
+    # print(df.loc[row, 'Class'])
     insertSql = 'insert into foraminifer_image(class,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
                 '%s,%s,%s,%s) '
     session.execute(insertSql,
