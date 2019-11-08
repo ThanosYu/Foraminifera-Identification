@@ -16,8 +16,8 @@ myset = db.img
 #     list.append(dic2)
 #     myset.insert_many(list)
 
-col = db.stoneImage
-data = col.find_one({'_id': ObjectId("5dc5158c05f592329774374c")})
+col = db.ForaminiferImage
+data = col.find_one({'_id': ObjectId("5dc51ec805f59246e632c009")})
 print(data['Data'])
-with open('test1.jpg', 'wb') as f:
+with open('test1.png', 'wb') as f:
     f.write(data['Data'])
