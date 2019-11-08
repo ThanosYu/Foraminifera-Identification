@@ -146,11 +146,11 @@ df = df.reset_index(drop=True)
 print('**********************start insert')
 for row in range(len(df)):
     print(df.loc[row, 'Category'])
-    insertSql = 'insert into sandstone_image(class,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
+    insertSql = 'insert into sandstone_image(category,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
                 '%s,%s,%s,%s) '
     session.execute(insertSql,
-                    (df.loc[row, 'Category'], df.loc[row, 'Feature_1'], df.loc[row, 'Feature_2'], df.loc[row, 'Feature_3'],
-                     df.loc[row, 'Feature_4'], df.loc[row, 'Base64']))
+                    (df.loc[row, 'Category'], df.loc[row, 'Feature_1'], df.loc[row, 'Feature_2'],
+                     df.loc[row, 'Feature_3'], df.loc[row, 'Feature_4'], df.loc[row, 'Base64']))
     if row % 10 == 0:
         print('**********************row: ', row)
 
