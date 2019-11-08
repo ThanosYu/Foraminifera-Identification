@@ -53,7 +53,7 @@ img_shape = (224, 224)
 # print ('MM ',img)
 
 df_dict = {}
-df_dict['Class'] = []
+df_dict['Category'] = []
 df_dict['Feature_1'] = []
 df_dict['Feature_2'] = []
 df_dict['Feature_3'] = []
@@ -108,7 +108,7 @@ for dirs, subdirs, files in os.walk(data_dir):
         # placeholder
         df_dict['Feature_3'].append(fea[0, 0])
         df_dict['Feature_4'].append(fea[0, 1])
-        df_dict['Class'].append(class_id[this_id])
+        df_dict['Category'].append(class_id[this_id])
 
         # print('Number of Features = ', fea.shape[1], ' for image = ', img_file)
         base64_data = base64.b64encode(open(img_file, 'rb').read())
@@ -152,11 +152,11 @@ df = df.reset_index(drop=True)
 
 print('**********************start insert')
 for row in range(len(df)):
-    print(df.loc[row, 'Class'])
-    insertSql = 'insert into foraminifer_image(class,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
+    print(df.loc[row, 'Category'])
+    insertSql = 'insert into foraminifer_image(category,feature_1,feature_2,feature_3,feature_4,base64) values (%s,%s,' \
                 '%s,%s,%s,%s) '
     session.execute(insertSql,
-                    (df.loc[row, 'Class'], df.loc[row, 'Feature_1'], df.loc[row, 'Feature_2'], df.loc[row, 'Feature_3'],
+                    (df.loc[row, 'Category'], df.loc[row, 'Feature_1'], df.loc[row, 'Feature_2'], df.loc[row, 'Feature_3'],
                      df.loc[row, 'Feature_4'], df.loc[row, 'Base64']))
     if row % 10 == 0:
         print('**********************row: ', row)
