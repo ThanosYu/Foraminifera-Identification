@@ -114,7 +114,7 @@ for dirs, subdirs, files in os.walk(data_dir):
         base64_data = base64.b64encode(open(img_file, 'rb').read())
         s = base64_data.decode()
         df_dict['Base64'].append(s)
-        # print('data:image/jpeg;base64,', s)
+        # print('data:image/png;base64,', s)
 
 print('**********************load into df success')
 forams_features = np.array(forams_features).reshape(len(forams_features), -1)
