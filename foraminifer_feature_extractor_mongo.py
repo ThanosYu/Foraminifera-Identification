@@ -22,8 +22,8 @@ print('Pre-trained Model loaded.')
 
 # data_dir = './NCSU-CUB_Foram_Images_01/'
 # data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerina_bulloides/'
-data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerinoides_ruber/'
-# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerinoides_sacculifer/'
+# data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerinoides_ruber/'
+data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Globigerinoides_sacculifer/'
 # data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_dutertrei/'
 # data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_incompta/'
 # data_dir = './NCSU-CUB_Foram_Images_01/NCSU-CUB_Foram_Images_Neogloboquadrina_pachyderma/'
