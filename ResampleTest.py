@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # pd.set_option('display.mpl_style', 'default')
 
-range = pd.date_range('2015-01-01', '2015-12-31', freq='15min')
+range = pd.date_range('2015-01-01', '2015-01-01', freq='15min')
 df = pd.DataFrame(index=range)
 
 # Average speed in miles per hour
