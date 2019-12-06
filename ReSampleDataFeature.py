@@ -8,32 +8,49 @@ cluster = Cluster(contact_points=['10.192.27.110'],
                   load_balancing_policy=RoundRobinPolicy())
 session = cluster.connect(keyspace='dex')
 
-cql = 'select * from data_feature where sensor_id = %s AND type = %s allow filtering'
-result = session.execute(cql, ('S2MTR1002AC180RN', 'RMS')).current_rows
-df = pd.DataFrame(result)
-df = df[(df['time'] >= 1565398800000) & (df['time'] <= 1568270649060)]
-df = df.reset_index(drop=True)
+cql_feature_type = 'select distinct sensor_id, type from data_feature'
+typeResult = session.execute(cql_feature_type).current_rows
+typeDf = pd.DataFrame(typeResult)
 
-df['time'] = pd.to_datetime(df['time'], unit='ms')
-# print('=========init', df)
+startTime = 1565398800000
+endTime = 1568270649060
 
-df = df.set_index('time')
-# print('=========index', df)
+for row in range(len(typeDf)):
+    sensorId = typeDf.loc[row, 'sensor_id']
+    type = typeDf.loc[row, 'type']
+    print('======sensorId: ', sensorId)
+    print('======type: ', type)
 
-df = df.resample('1H').ffill()
-print('resample', df)
+    cql_data_feature = 'select * from data_feature where sensor_id = %s AND type = %s allow filtering'
+    result = session.execute(cql_data_feature, (sensorId, type)).current_rows
+    df = pd.DataFrame(result)
+    df = df[(df['time'] >= startTime) & (df['time'] <= endTime)]
+    df = df.reset_index(drop=True)
 
-df.reset_index(level=0, inplace=True)
-# print('=========reset', df)
-df['time'] = (df['time'].values - np.datetime64('1970-01-01T08:00:00Z')) / np.timedelta64(1, 'ms')
-df['time'] = df['time'].astype(pd.np.int64)
-print('=========time', df)
+    df['time'] = pd.to_datetime(df['time'], unit='ms')
+    # print('=========init', df)
 
-print('=========start insert')
-for row in range(len(df)):
-    print('==========row', row)
-    insertSql = 'insert into data_feature_resample(sensor_id,type,time,end_time,start_time,value) values (%s,%s,%s,' \
-                '%s,%s,%s) '
-    session.execute(insertSql,
-                    ('S2MTR1002AC180RN', 'RMS', df.loc[row, 'time'], df.loc[row, 'end_time'], df.loc[row, 'start_time'],
-                     df.loc[row, 'value']))
+    df = df.set_index('time')
+    # print('=========index', df)
+
+    df = df.resample('1H').ffill()
+    # print('reSample', df)
+
+    df.reset_index(level=0, inplace=True)
+    # print('=========reset', df)
+    df['time'] = (df['time'].values - np.datetime64('1970-01-01T08:00:00Z')) / np.timedelta64(1, 'ms')
+    df['time'] = df['time'].astype(pd.np.int64)
+    print('=========df size', df.shape[0])
+    if df.shape[0] <= 10:
+        continue
+
+    for subRow in range(len(df)):
+        # print('==========subRow', subRow)
+        insertSql = 'insert into data_feature_resample(sensor_id,type,time,end_time,start_time,value) values (%s,%s,' \
+                    '%s,%s,%s,%s) '
+        session.execute(insertSql,
+                        (sensorId, type, df.loc[subRow, 'time'], df.loc[subRow, 'end_time'],
+                         df.loc[subRow, 'start_time'],
+                         df.loc[row, 'value']))
+        if subRow % 10 == 0:
+            print('**********************row: ', subRow)
