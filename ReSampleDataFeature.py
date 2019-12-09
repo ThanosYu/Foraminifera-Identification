@@ -33,7 +33,7 @@ for row in range(len(typeDf)):
     df = df.set_index('time')
     # print('=========index', df)
 
-    df = df.resample('1H').ffill()
+    df = df.resample('1H').ffill().bfill()
     # print('reSample', df)
 
     df.reset_index(level=0, inplace=True)
@@ -43,6 +43,7 @@ for row in range(len(typeDf)):
     print('=========df size', df.shape[0])
     if df.shape[0] <= 10:
         continue
+    print(df)
 
     for subRow in range(len(df)):
         # print('==========subRow', subRow)
