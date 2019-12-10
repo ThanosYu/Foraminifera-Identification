@@ -21,7 +21,7 @@ for row in range(len(typeDf)):
     print('======sensorId: ', sensorId)
     print('======type: ', type)
 
-    cql_data_feature = 'select * from data_feature where sensor_id = %s AND type = %s allow filtering'
+    cql_data_feature = 'select * from data_feature where sensor_id = %s AND type = %s'
     result = session.execute(cql_data_feature, (sensorId, type)).current_rows
     df = pd.DataFrame(result)
     df = df[(df['time'] >= startTime) & (df['time'] <= endTime)]
@@ -52,6 +52,6 @@ for row in range(len(typeDf)):
         session.execute(insertSql,
                         (sensorId, type, df.loc[subRow, 'time'], df.loc[subRow, 'end_time'],
                          df.loc[subRow, 'start_time'],
-                         df.loc[row, 'value']))
+                         df.loc[subRow, 'value']))
         if subRow % 10 == 0:
             print('**********************row: ', subRow)
