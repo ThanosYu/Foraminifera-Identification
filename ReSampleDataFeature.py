@@ -21,11 +21,13 @@ for row in range(len(typeDf)):
     print('======sensorId: ', sensorId)
     print('======type: ', type)
 
-    cql_data_feature = 'select * from data_feature where sensor_id = %s AND type = %s'
-    result = session.execute(cql_data_feature, (sensorId, type)).current_rows
+    cql_data_feature = 'select * from data_feature where sensor_id = %s AND type = %s and time >= %s and time <= %s ' \
+                       'allow filtering '
+    result = session.execute(cql_data_feature, (sensorId, type, startTime, endTime)).current_rows
     df = pd.DataFrame(result)
-    df = df[(df['time'] >= startTime) & (df['time'] <= endTime)]
-    df = df.reset_index(drop=True)
+    print('=========df size', df.shape[0])
+    if df.shape[0] == 0:
+        continue
 
     df['time'] = pd.to_datetime(df['time'], unit='ms')
     # print('=========init', df)
@@ -40,10 +42,9 @@ for row in range(len(typeDf)):
     # print('=========reset', df)
     df['time'] = (df['time'].values - np.datetime64('1970-01-01T08:00:00Z')) / np.timedelta64(1, 'ms')
     df['time'] = df['time'].astype(pd.np.int64)
-    print('=========df size', df.shape[0])
-    if df.shape[0] <= 10:
+
+    if df.shape[0] < 10:
         continue
-    print(df)
 
     for subRow in range(len(df)):
         # print('==========subRow', subRow)
