@@ -19,13 +19,19 @@ result = session.execute(cql_data_feature, (sensorId, type, startTime, endTime))
 df = pd.DataFrame(result)
 print(df)
 
+# enlarge the time range
+row = [{'time': 1565412540000}]
+
+df = df.append(row, ignore_index=True)
+print('=========new', df)
+
 df['time'] = pd.to_datetime(df['time'], unit='ms')
 # print('=========init', df)
 
 df = df.set_index('time')
 print('=========index', df)
 
-df = df.resample('1S').ffill().bfill()
+df = df.resample('1S').bfill().ffill()
 print('reSample', df)
 
 df.reset_index(level=0, inplace=True)

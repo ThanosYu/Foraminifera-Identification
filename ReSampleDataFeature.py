@@ -35,7 +35,7 @@ for row in range(len(typeDf)):
     df = df.set_index('time')
     # print('=========index', df)
 
-    df = df.resample('1H').ffill().bfill()
+    df = df.resample('1H').bfill().ffill()
     # print('reSample', df)
 
     df.reset_index(level=0, inplace=True)
