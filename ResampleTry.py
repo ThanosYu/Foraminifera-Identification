@@ -17,21 +17,23 @@ cql_data_feature = 'select * from data_feature where sensor_id = %s AND type = %
                    'filtering '
 result = session.execute(cql_data_feature, (sensorId, type, startTime, endTime)).current_rows
 df = pd.DataFrame(result)
-print(df)
+print(df['time'])
 
 # enlarge the time range
-row = [{'time': 1565412540000}]
+first = [{'time': 1565389380000}]
+df = df.append(first, ignore_index=True)
 
-df = df.append(row, ignore_index=True)
+last = [{'time': 1565412540000}]
+df = df.append(last, ignore_index=True)
 print('=========new', df)
 
-df['time'] = pd.to_datetime(df['time'], unit='ms')
+df['time'] = pd.to_datetime(df['time'] + 28800000, unit='ms')
 # print('=========init', df)
 
 df = df.set_index('time')
 print('=========index', df)
 
-df = df.resample('1S').bfill().ffill()
+df = df.resample('1S').bfill().ffill().bfill()
 print('reSample', df)
 
 df.reset_index(level=0, inplace=True)
@@ -39,4 +41,4 @@ df.reset_index(level=0, inplace=True)
 df['time'] = (df['time'].values - np.datetime64('1970-01-01T08:00:00Z')) / np.timedelta64(1, 'ms')
 df['time'] = df['time'].astype(pd.np.int64)
 
-# print('=========reset', df)
+print('=========reset', df)

@@ -25,17 +25,27 @@ for row in range(len(typeDf)):
                        'allow filtering '
     result = session.execute(cql_data_feature, (sensorId, type, startTime, endTime)).current_rows
     df = pd.DataFrame(result)
+
+    # enlarge the time range
+    # first = [{'time': 1565389380000}]
+    # df = df.append(first, ignore_index=True)
+    #
+    # last = [{'time': 1565412540000}]
+    # df = df.append(last, ignore_index=True)
+    # print('=========new', df)
+
     print('=========df size', df.shape[0])
     if df.shape[0] == 0:
         continue
 
-    df['time'] = pd.to_datetime(df['time'], unit='ms')
+    # correct timezone
+    df['time'] = pd.to_datetime(df['time'] + 28800000, unit='ms')
     # print('=========init', df)
 
     df = df.set_index('time')
     # print('=========index', df)
 
-    df = df.resample('1H').bfill().ffill()
+    df = df.resample('1H').bfill().ffill().bfill()
     # print('reSample', df)
 
     df.reset_index(level=0, inplace=True)
